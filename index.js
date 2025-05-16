@@ -4,6 +4,12 @@ import User from './user.js';
 const app = express();
 const port = 3000;
 
+import cors from 'cors';
+
+app.use(cors());        // ← tambahkan ini
+app.use(json());
+
+
 app.use(json());
 
 app.get('/users', async (_req, res) => {
@@ -51,6 +57,14 @@ app.delete('/users/:id', async (req, res) => {
     } catch {
         res.status(500).json({ error: 'Gagal menghapus user' });
     }
+});
+
+app.get('/', (_req, res) => {
+    res.send('Welcome to Express + MySQL API 🚀');
+});
+
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
 });
 
 app.listen(port, () => {
