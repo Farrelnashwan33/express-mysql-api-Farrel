@@ -1,36 +1,23 @@
-import db from './db.js';
+import express from 'express';
+import cors from 'cors';
+import db from './index.js'; // Pastikan kamu sudah bikin file ini
 
-class User {
-    constructor({ name, email }) {
-        this.name = name;
-        this.email = email;
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.json());
+
+// Contoh route
+app.get('/users', (req, res) => {
+  db.query('SELECT * FROM users', (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error ambil data users', error: err });
     }
+    res.json(results);
+  });
+});
 
-    async save() {
-        const [result] = await db.execute(
-            'INSERT INTO users (name, email) VALUES (?, ?)',
-            [this.name, this.email]
-        );
-        return result;
-    }
-
-    static async findAll() {
-        const [rows] = await db.execute('SELECT * FROM users ORDER BY id DESC');
-        return rows;
-    }
-
-    static async update(id, { name, email }) {
-        const [result] = await db.execute(
-            'UPDATE users SET name = ?, email = ? WHERE id = ?',
-            [name, email, id]
-        );
-        return result;
-    }
-
-    static async deleteById(id) {
-        const [result] = await db.execute('DELETE FROM users WHERE id = ?', [id]);
-        return result;
-    }
-}
-
-export default User;
+app.listen(PORT, () => {
+  console.log(`Server berjalan di http://localhost:${PORT}`);
+});
